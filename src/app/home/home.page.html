@@ -1,20 +1,85 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon slot="icon-only" src="/assets/onion.svg"></ion-icon>
+      </ion-button>  
+    </ion-buttons>  
     <ion-title>
-      Blank
+      Is Onion?
     </ion-title>
+    <ion-buttons slot="end">
+      <ion-button [routerLink]="['/login']">
+        <ion-icon slot="icon-only" name="log-in-outline"></ion-icon>
+      </ion-button>  
+    </ion-buttons>  
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!--
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-title size="large">Is Onion? Is Game?</ion-title>
     </ion-toolbar>
   </ion-header>
-
+  -->
   <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+    <div *ngIf="!gameService.question">
+      <h1><strong>Is Onion?</strong></h1>
+      <br/>
+      <br/>
+      <h1><strong>Or No Is Onion?</strong></h1>
+      <br/>
+      <br/>
+      <h1><strong>What Is Truth?</strong></h1>
+      <br/>
+      <br/>
+      <ion-row class="ion-padding">
+        <ion-col class="ion-text-center">
+          <ion-button type="submit" color="primary" expand="block" (click)="start()" strong="true">I Play Silly Game Now</ion-button>
+        </ion-col>
+      </ion-row>
+    </div>
+    <div *ngIf="gameService.question" class="ion-padding">
+      <h1 class="ion-padding">{{ gameService.question.text }}</h1>
+      <br/>
+      <br/>
+      <ion-row class="ion-padding">
+        <ion-col class="ion-text-center">
+          <ion-button type="submit" [color]="selectedAnswer===null||selectedAnswer===0?'primary':'gray'" expand="block" (click)="submitAnswer(0)" strong="true" [disabled]="gameService.question.result !== null">Not Is Onion</ion-button>
+        </ion-col>
+        <ion-col class="ion-text-center">
+          <ion-button type="submit" [color]="selectedAnswer===null||selectedAnswer===1?'primary':'gray'" expand="block" (click)="submitAnswer(1)" strong="true" [disabled]="gameService.question.result !== null">Is Onion</ion-button>
+        </ion-col>
+      </ion-row>
+      <div class="ion-padding" *ngIf="gameService.question.result !== null">
+        <h1 class="ion-padding"><span *ngIf="gameService.question.result === false">Not </span>Correct! Is <span *ngIf="gameService.question.label === 0">Not</span> Onion!</h1>
+      </div>
+      <div class="ion-padding" *ngIf="gameService.question.result === null">
+        <!--placeholder-->
+        <h1 class="ion-padding">&nbsp;</h1>
+      </div>
+
+      <h1 *ngIf="gameService.question.result !== null">Score: {{ gameService.wins }} / {{ gameService.rounds }} [{{ gameService.rounds > 0 ? (gameService.wins / gameService.rounds * 100).toFixed(2) : 0 }}%]</h1>
+      <h1 *ngIf="gameService.question.result === null">&nbsp;</h1>
+
+      <ion-row class="ion-padding" *ngIf="gameService.question.result !== null">
+        <ion-col class="ion-text-center">
+          <ion-button type="submit" color="primary" expand="block" (click)="next()" strong="true">Again You Ask Me Question</ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row class="ion-padding" *ngIf="gameService.question.result === null">
+        <ion-col class="ion-text-center">
+          <!--placeholder-->
+          <ion-button type="submit" color="primary" fill="clear" strong="true"></ion-button>
+
+        </ion-col>
+      </ion-row>
+
+
+
+    </div>
+
   </div>
 </ion-content>

@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form *ngIf="!userService.user">
+    <ion-item lines="full">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input type="text" required [(ngModel)]="email" name="email"></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input type="password" required [(ngModel)]="pw" name="pw"></ion-input>
+    </ion-item>
+
+    <ion-row class="ion-padding">
+      <ion-col class="ion-text-center">
+        <ion-button type="submit" color="primary" expand="block" (click)="signIn()" strong="true">I Sign In To Silly Game Now</ion-button>
+        <br/>
+        <ion-button type="submit" color="tertiary" expand="block" (click)="register()" strong="true">I Register For Silly Game</ion-button>
+        <br/>
+        <br/>
+        <ion-label (click)="forgotPassword()"><u>I Forget Password</u></ion-label>
+      </ion-col>
+    </ion-row>
+  </form>
+
+  <div class="ion-padding" *ngIf="userService.user">
+    <div class="ion-text-center">
+      Signed in as: <strong>{{ userService.user.email }}</strong><br/><br/>
+    </div>
+    <ion-button type="submit" color="primary" expand="block" (click)="signOut()" strong="true">I Sign Out Now</ion-button>
+  </div>
+
+</ion-content>
