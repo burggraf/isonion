@@ -20,6 +20,7 @@ export class GameService {
   public question: Question = null;
   public wins: number = 0;
   public rounds: number = 0;
+  public gameid: string = null;
 
   constructor(private supaService: SupaService) { 
     this.supabase = supaService.supabase;
@@ -56,7 +57,47 @@ export class GameService {
       this.question.result = false;
     }
     this.rounds++;
+    this.saveResult(this.question.id, this.question.result);
     return retval;
+  }
+
+  private async saveResult(id: string, result: boolean) {
+    if (!this.supabase.auth.user()) {
+      // not logged in
+      return;
+    }
+    if (!this.gameid) {
+      const { data, error } = await this.supabase
+      .from('onion_game')
+      .select('id');
+      if (error) {
+        console.error('error getting onion_game', error);
+      } else {
+        if (data.length === 0) {
+          const { data, error } = await this.supabase
+          .from('onion_game')
+          .insert([
+            { userid: this.supabase.auth.user().id }
+          ]);  
+          if (error) {
+            console.error('error creating onion_game', error);
+          } else {
+            this.gameid = data[0].id;
+          }       
+        } else {
+          this.gameid = data[0].id;
+        }
+      }
+    }
+    console.log('gameid is', this.gameid);
+    const { data, error } = await this.supabase
+    .from('onion_game_data')
+    .insert([
+      { gameid: this.gameid, itemid: id, correct:(result?1:0) }
+    ]);  
+    if (error) {
+      console.error('error on insert of onion_game_data',error);
+    }
   }
 
   async loadUser() {

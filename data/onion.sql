@@ -1,0 +1,1 @@
+CREATE TABLE onion (text text, label integer, id uuid PRIMARY KEY DEFAULT uuid_generate_v4());
