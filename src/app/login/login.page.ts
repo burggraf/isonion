@@ -22,9 +22,11 @@ export class LoginPage implements OnInit {
   }
   async signOut() {
     const { error } = await this.userService.signOut();
+    /*
     if (!error) {
       location.reload();
     }
+    */
   }
   forgotPassword() {
 

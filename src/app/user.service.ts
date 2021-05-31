@@ -9,9 +9,15 @@ export class UserService {
   private supabase: SupabaseClient;
   public user: User;
   public session: Session;
+  public gameid: string = null;
 
   constructor(private supaService: SupaService) { 
     this.supabase = supaService.supabase;
+    /*
+    this.supabase.auth.onAuthStateChange((event, session) => {
+      console.log('** onAuthStateChange', event, session);
+    })
+    */
     this.loadUser();
   }
 
@@ -41,6 +47,9 @@ export class UserService {
     } else {
       this.user = user;
       this.session = session;
+
+      this.setGameId();
+
       return { user, session, error};
     }
   }
@@ -50,14 +59,44 @@ export class UserService {
     if (error) {
       console.error('signOut error', error);
     } else {
+      this.user = null;
+      this.session = null;
+      this.gameid = null;
       return { error };
     }
   }
 
-  
+  async setGameId() {
+      // get gameid
+      const { data, error } = await this.supabase
+      .from('onion_game')
+      .select('id');
+      if (error) {
+        this.gameid = null;
+        console.error('error getting onion_game', error);
+      } else {
+        if (data.length === 0) {
+          const { data, error } = await this.supabase
+          .from('onion_game')
+          .insert([
+            { userid: this.supabase.auth.user().id }
+          ]);  
+          if (error) {
+            this.gameid = null;
+            console.error('error creating onion_game', error);
+          } else {
+            this.gameid = data[0].id;
+          }       
+        } else {
+          this.gameid = data[0].id;
+        }
+      }
+  }
+
   async loadUser() {
     // const user = await this.supabase.auth.user();
     this.user = this.supabase.auth.user();
+    this.setGameId();
   }
   
 

@@ -20,9 +20,9 @@ export class GameService {
   public question: Question = null;
   public wins: number = 0;
   public rounds: number = 0;
-  public gameid: string = null;
+  private currentGameID: string = null;
 
-  constructor(private supaService: SupaService) { 
+  constructor(private supaService: SupaService, private userService: UserService) { 
     this.supabase = supaService.supabase;
     this.loadUser();
   }
@@ -46,8 +46,13 @@ export class GameService {
     }
   }
 
-  submitAnswer(answer) {
+  async submitAnswer(answer) {
     let retval;
+    if (this.currentGameID !== this.userService.gameid) {
+      // reset scores
+      await this.reset_data();
+      this.currentGameID = this.userService.gameid;
+    }
     if (this.question.label === answer) { // correct!
       retval = true;
       this.wins++;
@@ -61,39 +66,36 @@ export class GameService {
     return retval;
   }
 
+  private async reset_data() {
+    this.rounds = 0;
+    this.wins = 0;
+    const { data, error } = await this.supabase
+      .from('onion_game_data')
+      .select('correct');
+    if (error) {
+      console.error('error getting onion_game_count total rounds', error);
+    } else {
+      data.map((item) => {
+        if (item.correct === 1) { 
+          this.wins++;
+        }
+        this.rounds++;
+      });
+    }
+  }
+
+
   private async saveResult(id: string, result: boolean) {
-    if (!this.supabase.auth.user()) {
+    if (!this.userService.gameid) {
       // not logged in
+      console.log('not logged in, cannot save result');
       return;
     }
-    if (!this.gameid) {
-      const { data, error } = await this.supabase
-      .from('onion_game')
-      .select('id');
-      if (error) {
-        console.error('error getting onion_game', error);
-      } else {
-        if (data.length === 0) {
-          const { data, error } = await this.supabase
-          .from('onion_game')
-          .insert([
-            { userid: this.supabase.auth.user().id }
-          ]);  
-          if (error) {
-            console.error('error creating onion_game', error);
-          } else {
-            this.gameid = data[0].id;
-          }       
-        } else {
-          this.gameid = data[0].id;
-        }
-      }
-    }
-    console.log('gameid is', this.gameid);
+
     const { data, error } = await this.supabase
     .from('onion_game_data')
     .insert([
-      { gameid: this.gameid, itemid: id, correct:(result?1:0) }
+      { gameid: this.userService.gameid, itemid: id, correct:(result?1:0) }
     ]);  
     if (error) {
       console.error('error on insert of onion_game_data',error);
