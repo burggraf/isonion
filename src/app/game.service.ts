@@ -50,7 +50,8 @@ export class GameService {
     let retval;
     if (this.currentGameID !== this.userService.gameid) {
       // reset scores
-      await this.reset_data();
+      await this.reset_rounds();
+      await this.reset_wins();
       this.currentGameID = this.userService.gameid;
     }
     if (this.question.label === answer) { // correct!
@@ -66,21 +67,28 @@ export class GameService {
     return retval;
   }
 
-  private async reset_data() {
+  private async reset_rounds() {
     this.rounds = 0;
-    this.wins = 0;
-    const { data, error } = await this.supabase
+    const { data, error, count } = await this.supabase
       .from('onion_game_data')
-      .select('correct');
+      .select('correct', {count: 'exact', head: true});
     if (error) {
       console.error('error getting onion_game_count total rounds', error);
     } else {
-      data.map((item) => {
-        if (item.correct === 1) { 
-          this.wins++;
-        }
-        this.rounds++;
-      });
+      this.rounds = count;
+    }
+  }
+
+  private async reset_wins() {
+    this.wins = 0;
+    const { data, error, count } = await this.supabase
+      .from('onion_game_data')
+      .select('correct', {count: 'exact', head: true})
+      .eq('correct', 1);
+    if (error) {
+      console.error('error getting onion_game_count total wins', error);
+    } else {
+      this.wins = count;
     }
   }
 
