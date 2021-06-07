@@ -20,6 +20,9 @@ export class LoginPage implements OnInit {
   async signIn() {
     const result = await this.userService.signIn(this.email, this.pw);
   }
+  async signInWithFacebook() {
+    const result = await this.userService.signInWithFacebook();
+  }
   async signOut() {
     const { error } = await this.userService.signOut();
     /*

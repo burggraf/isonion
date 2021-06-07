@@ -91,9 +91,75 @@ export class GameService {
       this.wins = count;
     }
   }
+  /*
+  INSERT into game_log (game_date, home_team, visiting_team, game_data)
+values (
+'2021-06-02',
+'Chicago Cubs',
+'San Diego Padres',
+'{"winning_pitcher": "Alzolay", 
+  "losing_pitcher": "Johnson", 
+  "final_score": {
+    "visitors": {"runs": 1, "hits": 5, "errors": 2}, 
+    "home": {"runs": 6, "hits": 9, "errors": 0}
+  }, 
+  "innings": {
+    "visitors": [0,0,0,1,0,0,0,0,0], 
+    "home": [0,0,0,1,2,0,3,0]}
+  }'
+);
+  */
+  private async test_json() {
+    /*
+    const { data, error } = await this.supabase
+    .from('game_log')
+    .insert([{ 
+      game_date: '2021-06-02',
+      home_team: 'Chicago Cubs',
+      visiting_team: 'San Diego Padres',
+      game_data: {
+        "winning_pitcher": "Alzolay", 
+        "losing_pitcher": "Johnson", 
+        "final_score": {
+          "visitors": {"runs": 1, "hits": 5, "errors": 2}, 
+          "home": {"runs": 6, "hits": 9, "errors": 0}
+        }, 
+        "innings": {
+          "visitors": [0,0,0,1,0,0,0,0,0], 
+          "home": [0,0,0,1,2,0,3,0]
+        }
+      }        
+    }]);  
+    console.log('insert game_log', data, error);
 
+    SELECT 
+      visiting_team, 
+      game_data -> 'final_score' -> 'visitors' -> 'runs' as visitors_runs,
+      home_team, 
+      game_data -> 'final_score' -> 'home' -> 'runs' as home_runs
+    FROM game_log;
+
+    SELECT home_team, 
+    game_data -> 'innings' -> 'home' -> 6 as seventh_inning
+    FROM game_log;
+
+    
+    const { data, error } = await this.supabase
+    .from('game_log')
+    .select('home_team, seventh_inning_runs:game_data->innings->home->6');
+    console.log(JSON.stringify(data,null,2));
+
+    // SELECT textarray[1], array_length(textarray, 1) FROM arraytest;
+    const { data, error } = await this.supabase
+    .from('game_log')
+    .select('json_result:game_data->winning_pitcher, text_result:game_data->>winning_pitcher');
+    console.log(JSON.stringify(data,null,2));
+  */
+    
+  }
 
   private async saveResult(id: string, result: boolean) {
+    this.test_json();
     if (!this.userService.gameid) {
       // not logged in
       console.log('not logged in, cannot save result');
