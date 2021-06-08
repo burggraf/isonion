@@ -90,6 +90,24 @@ export class UserService {
     }
   }
 
+  public async signInWithGithub() {
+    const { user, session, error } = await this.supabase.auth.signIn({
+      // provider can be 'github', 'google', 'gitlab', or 'bitbucket'
+      provider: 'github'
+    });
+    if (error) {
+      console.error('** signInWithGithub error', error);
+      return { user, session, error};
+    } else {
+      this.user = user;
+      this.session = session;
+
+      this.setGameId();
+
+      return { user, session, error};
+    }
+  }
+
   public async signOut() {
     const { error } = await this.supabase.auth.signOut();
     if (error) {

@@ -26,6 +26,9 @@ export class LoginPage implements OnInit {
   async signInWithGoogle() {
     const result = await this.userService.signInWithGoogle();
   }
+  async signInWithGithub() {
+    const result = await this.userService.signInWithGithub();
+  }
   async signOut() {
     const { error } = await this.userService.signOut();
     /*
