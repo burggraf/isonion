@@ -154,6 +154,12 @@ values (
     .from('game_log')
     .select('json_result:game_data->winning_pitcher, text_result:game_data->>winning_pitcher');
     console.log(JSON.stringify(data,null,2));
+
+
+    const { data, error, count } = await this.supabase
+    .from('onion_game_data')
+    .select('*', {count: 'exact', head: true});
+    console.log('COUNT', data, error, count );
   */
     
   }

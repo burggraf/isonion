@@ -29,6 +29,9 @@ export class LoginPage implements OnInit {
   async signInWithGithub() {
     const result = await this.userService.signInWithGithub();
   }
+  async signInWithApple() {
+    const result = await this.userService.signInWithApple();
+  }
   async signOut() {
     const { error } = await this.userService.signOut();
     /*
