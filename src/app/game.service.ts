@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Session, SupabaseClient, User } from '@supabase/supabase-js';
+
 import { SupaService } from './supa.service';
 import { UserService } from './user.service';
-import { SupabaseClient, User, Session } from '@supabase/supabase-js';
 
 export interface Question {
   id: string;
@@ -161,11 +162,71 @@ values (
     .select('*', {count: 'exact', head: true});
     console.log('COUNT', data, error, count );
   */
+
+    // ID,Season,EpisodeNo,Title,AirDate,Writers,Director,SEID
+
+    /*
+    https://kgzezkwudiygabyfvfjj.supabase.co/rest/v1/episodes?select=season%2Cepisodeno%2Ctitle%2Cscripts%28*%29%2Cscripts.limit%3D1&limit=1&episodeno=gt.3&order=season%2Cepisodeno.asc.nullslast
     
+    https://kgzezkwudiygabyfvfjj.supabase.co/rest/v1/episodes?
+    select=season,episodeno,title,scripts(*),scripts.limit=1&limit=1&episodeno=gt.3&order=season,
+    episodeno.asc.nullslast
+    */
+
+    /*
+    const { data, error } = await this.supabase
+    .from('episodes')
+    .select()
+    .order('season', { ascending: false })
+    .order('episodeno', { ascending: false })
+    .limit(20)
+    */
+
+    /*
+    const { data, error } = await this.supabase
+    .from('episodes')
+    .select(`
+    season,
+    episodeno,
+    title,
+    scripts(*)
+    `)
+    .limit(1)
+    .gt('episodeno', 3)
+    .order('season,episodeno')
+    */
+
+/*
+    const { data, error } = await this.supabase
+    .from('scripts')
+    .select(`
+    character,
+    dialogue,
+    episodes (
+      season, episodeno, title
+    )
+    `)
+    .limit(3)
+    .eq('season', 1)
+    .eq('episodeno', 4)
+    .order('id')
+*/
+
+
+    // .or('season.is.null,episodeno.is.null')
+    //.or('season.eq.6,season.eq.7')
+    //.or('episodeno.eq.1,episodeno.eq.2')
+    // GET /people?and=(grade.gte.90,student.is.true,or(age.gte.14,age.is.null)) HTTP/1.1
+    // .or('total.lt.1,total.gt.15')
+    // .or('billingcity.eq.Budapest,billingcity.eq.Dublin,billingcity.eq.Madison')
+    
+    
+    //console.log(JSON.stringify(data,null,2));
+
   }
 
   private async saveResult(id: string, result: boolean) {
-    this.test_json();
+    // this.test_json();
     if (!this.userService.gameid) {
       // not logged in
       console.log('not logged in, cannot save result');
